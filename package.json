@@ -1,0 +1,20 @@
+{
+  "name": "usando-puppeteer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index_1.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "puppeteer": "^19.7.4",
+    "puppeteer-cluster": "^0.23.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "random-useragent": "^0.5.0"
+  }
+}
