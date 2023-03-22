@@ -1,13 +1,7 @@
 <?php
 //marca inicio da execucao
 $initial_time_execution = time();
-//recebimento do array de urls
-/* //recebendo via query_params
-$url_from_get = isset($_GET["url"]) //verifica se recebeu
-    ? json_decode($_GET["url"]) //se recebeu usa o json
-    : null; //se nao deixa nulo como default
-*/
-//recebendo via body_params
+//recebendo array de urls via body_params
 $url_from_get = json_decode(file_get_contents('php://input'));
 //se recebeu o array
 if($url_from_get):
@@ -65,8 +59,17 @@ function busca_arquivo_html($file_name, $initial_time_execution){
         foreach ($array_dir_files as $file_info):
             //se o arquivo for dessa reequisicao
             if($file_info->getFilename() == $file_name):
+                sleep(1);
                 //pega o conteudo do arquivo
                 $source_code = file_get_contents("../url_finalizado/" . $file_info->getFilename());
+                //verifica se o conteudo recebido e nulo
+                if(!$source_code){
+                    //espera mais 1 segundo e meio
+                    sleep(2);
+                    //tenta novamente
+                    $source_code = file_get_contents("../url_finalizado/" . $file_info->getFilename());
+                }
+
                 //sai do foreach
                 break;
             endif;
