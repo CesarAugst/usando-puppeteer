@@ -93,7 +93,7 @@ var status_response = "";
     const cluster = await Cluster.launch({
         puppeteer,
         concurrency: Cluster.CONCURRENCY_PAGE,
-        maxConcurrency: 4,
+        maxConcurrency: 30,
         puppeteerOptions: options
     });
 
@@ -183,6 +183,7 @@ var status_response = "";
             htmlContent = await gzip(htmlContent);
             //insere na resposta convertendo o binario em string
             jsonResponse['html'] = htmlContent.toString('base64');
+            //console.log(`Obteve conteudo de ${Number(data.id)}#${htmlContent.toString('base64').substring(0,5)}`)
             //converte o status_http recebido em numero e insere na resposta
             jsonResponse['http_code'] = Number(status_response);
             //opcionais
@@ -246,20 +247,27 @@ var status_response = "";
 //params:
 //return:
 function finishing_array_requisitions(){
-    //faz criacao do arquivo com o conteudo
-    fs.writeFileSync(`../url_finalizado/${file_name}`, JSON.stringify(queue), {encoding: 'utf-8'});
-    //remove o arquivo de processamento atual
-    fs.unlink(`../url_aguardando/${file_name}.processing`, ()=>{});
-    //limpa a fila
-    queue = [];
-    //limpa o nome do arquivo
-    file_name = "";
-    //limpa a mensagem de erro
-    error_msg = "";
-    //limpa o tipo de conteudo
-    content_type = "";
-    //limpa o status de resposta
-    status_response = "";
+    //tenta fazer gestao com arquivos
+    try{
+        //faz criacao do arquivo com o conteudo
+        fs.writeFileSync(`../url_finalizado/${file_name}`, JSON.stringify(queue), {encoding: 'utf-8'});
+        //remove o arquivo de processamento atual
+        fs.unlink(`../url_aguardando/${file_name}.processing`, ()=>{});
+    }catch(error){
+        //se nao puder exibe erro
+        console.log(error)
+    }finally{ //independente, faz limpeza da metadata
+        //limpa a fila
+        queue = [];
+        //limpa o nome do arquivo
+        file_name = "";
+        //limpa a mensagem de erro
+        error_msg = "";
+        //limpa o tipo de conteudo
+        content_type = "";
+        //limpa o status de resposta
+        status_response = "";
+    }
 }
 
 //desc: equivalente a sleep
