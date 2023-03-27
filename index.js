@@ -86,6 +86,7 @@ var status_response = "";
 
 //fucnao com auto-execucao
 (async () => {
+	await vanillaPuppeteer.createBrowserFetcher().download(vanillaPuppeteer.PUPPETEER_REVISIONS.chromium)
     //instancia o puppeteer
     const puppeteer = addExtra(vanillaPuppeteer);
     puppeteer.use(Stealth());
