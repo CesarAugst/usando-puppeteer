@@ -218,15 +218,15 @@ var status_response = "";
     //loop infinito
     while(true){
         //acessa o diretorio
-        fs.readdir("../url_aguardando", (err, files) => {
+        fs.readdir("./url_aguardando", (err, files) => {
             //percorre o diretorio e faz um loop com o nome dos arquivos
             files.forEach(async(file) => {
                 //verifica se nao possui o sufixo de quando ja esta sendo processado por outra instancia
                 if (!file.endsWith('.processing')) {
                     //renomeia para processamento
-                    fs.rename(`../url_aguardando/${file}`, `../url_aguardando/${file}.processing`, () => {})
+                    fs.rename(`./url_aguardando/${file}`, `./url_aguardando/${file}.processing`, () => {})
                     //faz a leitura do conteudo do arquivo pegando o array de urls dentro dele
-                    const array_url = JSON.parse(fs.readFileSync(`../url_aguardando/${file}`,'utf8'));
+                    const array_url = JSON.parse(fs.readFileSync(`./url_aguardando/${file}`,'utf8'));
                     //armazena em variavel global o tamanho da fila
                     queue_lenght = array_url.length;
                     //armazena em variavel global o nome do arquivo
@@ -251,9 +251,9 @@ function finishing_array_requisitions(){
     //tenta fazer gestao com arquivos
     try{
         //faz criacao do arquivo com o conteudo
-        fs.writeFileSync(`../url_finalizado/${file_name}`, JSON.stringify(queue), {encoding: 'utf-8'});
+        fs.writeFileSync(`./url_finalizado/${file_name}`, JSON.stringify(queue), {encoding: 'utf-8'});
         //remove o arquivo de processamento atual
-        fs.unlink(`../url_aguardando/${file_name}.processing`, ()=>{});
+        fs.unlink(`./url_aguardando/${file_name}.processing`, ()=>{});
     }catch(error){
         //se nao puder exibe erro
         console.log(error)
