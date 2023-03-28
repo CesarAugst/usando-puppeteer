@@ -3,6 +3,7 @@
 $initial_time_execution = time();
 //recebendo array de urls via body_params
 $url_from_get = json_decode(file_get_contents('php://input'));
+die(var_dump(url_from_get));
 //reescrita pois em producao nao pegou na com a linha anterior (ambiente dev 7.4 e em prod 8.2)
 $url_from_get = $_REQUEST;
 //se recebeu o array
