@@ -262,7 +262,6 @@ async function read_waiting_file(file){
     if(fs.existsSync(file_name)){
         //tenta sem a extensao
         const file_content = fs.readFileSync(file_name,'utf8');
-        console.log('achou')
         //converte arquivo em json
         const parsed_file_content = JSON.parse(file_content)
         //resgata chave onde tem as urls convertendo em array-
