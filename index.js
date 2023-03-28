@@ -227,13 +227,6 @@ var status_response = "";
                     await fs.rename(`./url_aguardando/${file}`, `./url_aguardando/${file}.processing`, () => {})
                     //faz a leitura do conteudo do arquivo pegando o array de urls dentro dele
                     const array_url = await read_waiting_file(file);
-                    /*
-                    var  array_url = await JSON.parse(fs.readFileSync(`./url_aguardando/${file}`,'utf8'));
-                    array_url = JSON.parse(array_url.url);
-                    console.log('---')
-                    console.log(array_url)
-                    console.log('---')
-                     */
                     //armazena em variavel global o tamanho da fila
                     queue_lenght = array_url.length;
                     //armazena em variavel global o nome do arquivo
@@ -255,15 +248,26 @@ var status_response = "";
 //params: (string) nome do arquivo
 //return:
 async function read_waiting_file(file){
-    //declara o conteudo como array vazio
-    var content = [];
+    //array de urls inicia vazia
+    var array_url = [];
+    //nome do arquivo
+    var file_name = `./url_aguardando/${file}.processing`;
 
-    //tenta ler o arquivo sem extensao
-    const file_content = fs.readFileSync(`./url_aguardando/${file}.processing`,'utf8');
-    //converte arquivo em json
-    const parsed_file_content = JSON.parse(file_content)
-    //resgata chave onde tem as urls convertendo em array
-    const array_url = (JSON.parse(parsed_file_content.url))
+    //verifica se o arquivo nao existe
+    if(!fs.existsSync(file_name)){
+        //tenta sem a extensao
+        file_name = `./url_aguardando/${file}`;
+    }
+    //verifica se o arquivo existe
+    if(fs.existsSync(file_name)){
+        //tenta sem a extensao
+        const file_content = fs.readFileSync(file_name,'utf8');
+        console.log('achou')
+        //converte arquivo em json
+        const parsed_file_content = JSON.parse(file_content)
+        //resgata chave onde tem as urls convertendo em array-
+        array_url = (JSON.parse(parsed_file_content.url))
+    }
 
     //retorna o array de urls apos conversao
     return array_url;
