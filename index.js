@@ -224,12 +224,16 @@ var status_response = "";
                 //verifica se nao possui o sufixo de quando ja esta sendo processado por outra instancia
                 if (!file.endsWith('.processing')) {
                     //renomeia para processamento
-                    fs.rename(`./url_aguardando/${file}`, `./url_aguardando/${file}.processing`, () => {})
+                    await fs.rename(`./url_aguardando/${file}`, `./url_aguardando/${file}.processing`, () => {})
                     //faz a leitura do conteudo do arquivo pegando o array de urls dentro dele
-                    const array_url = JSON.parse(fs.readFileSync(`./url_aguardando/${file}.processing`,'utf8'));
-                    console.log('--------------------')
+                    const array_url = await read_waiting_file(file);
+                    /*
+                    var  array_url = await JSON.parse(fs.readFileSync(`./url_aguardando/${file}`,'utf8'));
+                    array_url = JSON.parse(array_url.url);
+                    console.log('---')
                     console.log(array_url)
-                    console.log('--------------------')
+                    console.log('---')
+                     */
                     //armazena em variavel global o tamanho da fila
                     queue_lenght = array_url.length;
                     //armazena em variavel global o nome do arquivo
@@ -246,6 +250,24 @@ var status_response = "";
         await delay(1000);
     }
 })();
+
+//desc: leitura de arquivo
+//params: (string) nome do arquivo
+//return:
+async function read_waiting_file(file){
+    //declara o conteudo como array vazio
+    var content = [];
+
+    //tenta ler o arquivo sem extensao
+    const file_content = fs.readFileSync(`./url_aguardando/${file}`,'utf8');
+    //converte arquivo em json
+    const parsed_file_content = JSON.parse(file_content)
+    //resgata chave onde tem as urls convertendo em array
+    const array_url = (JSON.parse(parsed_file_content.url))
+
+    //retorna o array de urls apos conversao
+    return array_url;
+}
 
 //desc: finaliza o lote de requisicoes
 //params:
