@@ -226,7 +226,7 @@ var status_response = "";
                     //renomeia para processamento
                     fs.rename(`./url_aguardando/${file}`, `./url_aguardando/${file}.processing`, () => {})
                     //faz a leitura do conteudo do arquivo pegando o array de urls dentro dele
-                    const array_url = JSON.parse(fs.readFileSync(`./url_aguardando/${file}`,'utf8'));
+                    const array_url = JSON.parse(fs.readFileSync(`./url_aguardando/${file}.processing`,'utf8'));
                     console.log('--------------------')
                     console.log(array_url)
                     console.log('--------------------')
