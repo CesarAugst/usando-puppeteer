@@ -219,6 +219,7 @@ var status_response = "";
     while(true){
         //acessa o diretorio
         fs.readdir("./url_aguardando", (err, files) => {
+            console.log(files)
             //percorre o diretorio e faz um loop com o nome dos arquivos
             files.forEach(async(file) => {
                 //verifica se nao possui o sufixo de quando ja esta sendo processado por outra instancia
