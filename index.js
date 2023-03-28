@@ -259,7 +259,7 @@ async function read_waiting_file(file){
     var content = [];
 
     //tenta ler o arquivo sem extensao
-    const file_content = fs.readFileSync(`./url_aguardando/${file}`,'utf8');
+    const file_content = fs.readFileSync(`./url_aguardando/${file}.processing`,'utf8');
     //converte arquivo em json
     const parsed_file_content = JSON.parse(file_content)
     //resgata chave onde tem as urls convertendo em array
