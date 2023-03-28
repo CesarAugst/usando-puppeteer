@@ -5,7 +5,6 @@ $initial_time_execution = time();
 $url_from_get = json_decode(file_get_contents('php://input'));
 //reescrita pois em producao nao pegou na com a linha anterior (ambiente dev 7.4 e em prod 8.2)
 $url_from_get = $_REQUEST;
-die(var_dump($url_from_get));
 //se recebeu o array
 if($url_from_get):
     //gera o arquivo txt com base no rray de urls recebidas
