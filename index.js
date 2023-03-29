@@ -90,7 +90,7 @@ var status_response = "";
 
 //fucnao com auto-execucao
 (async () => {
-	await vanillaPuppeteer.createBrowserFetcher().download(vanillaPuppeteer.PUPPETEER_REVISIONS.chromium)
+    await vanillaPuppeteer.createBrowserFetcher().download(vanillaPuppeteer.PUPPETEER_REVISIONS.chromium)
     //instancia o puppeteer
     const puppeteer = addExtra(vanillaPuppeteer);
     puppeteer.use(Stealth());
@@ -208,6 +208,8 @@ var status_response = "";
             //adiciona a resposta convertendo binario em string
             jsonResponse['erro_msg'] = err.toString();
         } finally {
+            //adiciona ao array de resposta
+            queue.push(jsonResponse);
             //verifica se e a ultima ocorrencia
             if(queue.length === queue_lenght) {
                 //finalizacao do processo de requisicao em lote
