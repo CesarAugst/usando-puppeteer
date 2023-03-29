@@ -29,7 +29,7 @@ else:
     //url recebida
     $url = $url_from_get;
     //reposta da requisicao
-    $response = ["url"=>$url, "status"=>$status];
+    $response = ["content_url_array"=>"", "http_status"=>$status];
 endif;
 //status da requisicao no cabecalho
 header("HTTP/1.1 $status");
