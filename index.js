@@ -208,16 +208,6 @@ var status_response = "";
             //adiciona a resposta convertendo binario em string
             jsonResponse['erro_msg'] = err.toString();
         } finally {
-            //adiciona ao array de resposta
-            queue.push(jsonResponse);
-            //limpa o nome do arquivo
-            file_name = "";
-            //limpa a mensagem de erro
-            error_msg = "";
-            //limpa o tipo de conteudo
-            content_type = "";
-            //limpa o status de resposta
-            status_response = "";
             //verifica se e a ultima ocorrencia
             if(queue.length === queue_lenght) {
                 //finalizacao do processo de requisicao em lote
