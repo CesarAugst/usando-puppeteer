@@ -3,6 +3,7 @@
 $initial_time_execution = time();
 //recebendo array de urls via body_params
 $url_from_get = json_decode(file_get_contents('php://input'));
+die(var_dump($url_from_get));
 //se recebeu o array
 if($url_from_get):
     //gera o arquivo txt com base no rray de urls recebidas
