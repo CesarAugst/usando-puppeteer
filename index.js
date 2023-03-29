@@ -181,7 +181,7 @@ var status_response = "";
             //armazena a resposta da requisicao
             let httpResponse = await page.goto(url, {'waitUntil': 'networkidle0', 'timeout': time_to_wait_in_page});
             //espera pelo carregamento do body
-            await page.waitForSelector('body');
+            //await page.waitForSelector('body');
             //pega o conteudo html da pagina
             let htmlContent = await page.content();
             //compacta o conteudo
