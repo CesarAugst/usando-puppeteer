@@ -264,6 +264,7 @@ async function read_waiting_file(file){
         const file_content = fs.readFileSync(file_name,'utf8');
         //converte arquivo em json
         array_url = JSON.parse(file_content)
+        console.log(array_url)
     }
     //retorna o array de urls apos conversao
     return array_url;
