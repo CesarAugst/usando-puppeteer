@@ -1,4 +1,8 @@
 <?php
+/*CONSTANTES DE VALOR*/
+//segundos que a requisicao espera a geracao de arquivo antes de encerrar com o campo null
+$time_to_wait_archive = 25;
+
 //marca inicio da execucao
 $initial_time_execution = time();
 //recebendo array de urls via body_params
@@ -42,6 +46,8 @@ function gera_arquivo_txt($url){
 }
 
 function busca_arquivo_html($file_name, $initial_time_execution){
+    //conteudo global para aguardar a requisicao
+    global $time_to_wait_archive;
     //pega os arquivos do diretorio
     $array_dir_files = new DirectoryIterator("../url_finalizado");
     //inicia como nulo a variavel do codigo fonte
@@ -51,7 +57,7 @@ function busca_arquivo_html($file_name, $initial_time_execution){
         //calcula o tmepo gasto
         $time_processing = time() - $initial_time_execution;
         //se o tempo ultrapassar 25seg
-        if($time_processing > 25):
+        if($time_processing > $time_to_wait_archive):
             $source_code = "";
             //para execucao do while
             break;

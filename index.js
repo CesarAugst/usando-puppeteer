@@ -2,6 +2,10 @@ const { Cluster } = require('puppeteer-cluster');
 const vanillaPuppeteer = require('puppeteer');
 const { addExtra } = require('puppeteer-extra');
 
+/*CONSTANTES DE VALOR*/
+//milisseconds que fica em cada pagina antes de encerrar como timeout
+const time_to_wait_in_page = 25000;
+
 //permitou rastrear sites com cloud flare protection habilitado
 const Stealth = require('puppeteer-extra-plugin-stealth');
 //utiliza agende randomico
@@ -175,7 +179,7 @@ var status_response = "";
                 }
             });
             //armazena a resposta da requisicao
-            let httpResponse = await page.goto(url, {'waitUntil': 'networkidle0', 'timeout': 20000});
+            let httpResponse = await page.goto(url, {'waitUntil': 'networkidle0', 'timeout': time_to_wait_in_page});
             //espera pelo carregamento do body
             await page.waitForSelector('body');
             //pega o conteudo html da pagina
