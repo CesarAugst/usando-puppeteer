@@ -26,6 +26,8 @@ var status_response = ""; //status da resposta
 
 /*FUNCOES UTILITARIAS*/
 const { delay } = require('./utils/f_delay.js');
+const { remove_file } = require("./utils/f_remove_file");
+
 //fucnao com auto-execucao
 (async () => {
     await vanillaPuppeteer.createBrowserFetcher().download(vanillaPuppeteer.PUPPETEER_REVISIONS.chromium)
@@ -226,7 +228,7 @@ function finishing_array_requisitions(){
             queue = [];
         }
         //remove o arquivo de processamento atual
-        fs.unlink(`${PATH_URL_WAITING}/${file_name}.processing`, ()=>{});
+        remove_file(`${PATH_URL_WAITING}/${file_name}.processing`);
     }catch(error){
         //se nao puder exibe erro
         console.log(error)
