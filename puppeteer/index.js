@@ -27,6 +27,7 @@ var status_response = ""; //status da resposta
 /*FUNCOES UTILITARIAS*/
 const { delay } = require('./utils/f_delay.js');
 const { remove_file } = require("./utils/f_remove_file");
+const { write_file } = require("./utils/f_write_file");
 
 //fucnao com auto-execucao
 (async () => {
@@ -222,7 +223,7 @@ function finishing_array_requisitions(){
         //verifica se o arquivo ainda existe na area de aguarde
         if(fs.existsSync(`${PATH_URL_WAITING}/${file_name}`) || fs.existsSync(`${PATH_URL_WAITING}/${file_name}.processing`)){
             //faz criacao do arquivo com o conteudo
-            fs.writeFileSync(`${PATH_URL_FINISHED}/${file_name}`, JSON.stringify(queue), {encoding: 'utf-8'});
+            write_file(`${PATH_URL_FINISHED}/${file_name}`, JSON.stringify(queue));
         }else{
             //se nao existe mais, limpa variavel do conteudo
             queue = [];
