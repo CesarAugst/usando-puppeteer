@@ -29,6 +29,7 @@ const { delay } = require('./utils/f_delay.js');
 const { remove_file } = require("./utils/f_remove_file");
 const { write_file } = require("./utils/f_write_file");
 const {bool_file_exists} = require("./utils/f_bool_file_exists");
+const {read_file} = require("./utils/f_read_file");
 
 //fucnao com auto-execucao
 (async () => {
@@ -207,7 +208,7 @@ async function read_waiting_file(file){
     //verifica se o arquivo existe
     if(bool_file_exists(file_name)){
         //tenta sem a extensao
-        const file_content = fs.readFileSync(file_name,'utf8');
+        const file_content = read_file(file_name);
         //converte arquivo em json
         array_url = JSON.parse(file_content)
     }
