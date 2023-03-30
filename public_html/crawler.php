@@ -9,8 +9,20 @@ $PATH_URL_FINISHED = "../puppeteer/url_finalizado"; //caminho ate a pasta de url
 $initial_time_execution = time();
 //recebendo array de urls via body_params
 $url_from_get = json_decode(file_get_contents('php://input'));
-//se recebeu o array
-if($url_from_get):
+//processa o corpo da resposta da requisicao
+$response = $url_from_get //se recebeu pelo get
+    ? process_sucess_requisition($url_from_get, $initial_time_execution) //processa com sucesso
+    : process_failed_requisition(); //processa com falha
+//status da requisicao no cabecalho
+header("HTTP/1.1 " .$response['http_status']);
+//exibe resposta
+echo json_encode($response);
+
+/*FUNCOES PRINCIPAIS*/
+//desc: responsavel por executar quando nao houver erro identificado na requisicao
+//params: (array) corpo da requisicao, (time) instancia de time ao iniciar a reuqisicao
+//return (array) corpo da resposta
+function process_sucess_requisition($url_from_get, $initial_time_execution){
     //gera o arquivo txt com base no rray de urls recebidas
     $file_name = gera_arquivo_txt($url_from_get);
     //aguarda o recebimento do conteudo do html
@@ -20,23 +32,27 @@ if($url_from_get):
         ? 200 //status 200 ok
         : 500; //status 500 erro interno do servidor
     //reposta da requisicao
-    $response = [
+    return [
         "http_status"=>$status,
         "content_url_array"=>json_decode($array_content_html)
     ];
+}
 
-else:
+//desc: responsavel por executar quando houver erro identificado na execucao
+//params: nenhum
+//return: (array) resposta da requisicao
+function process_failed_requisition(){
     //status da requisicao
     $status = 422;
-    //url recebida
-    $url = $url_from_get;
     //reposta da requisicao
-    $response = ["content_url_array"=>"", "http_status"=>$status];
-endif;
-//status da requisicao no cabecalho
-header("HTTP/1.1 $status");
-//exibe resposta
-echo json_encode($response);
+    return [
+        "http_status"=>$status,
+        "content_url_array"=>[]
+    ];
+}
+
+
+/*FUNCOES DE APOIO*/
 
 //desc: gera um arquivo na apsta de espera com as urls da requisicao
 //params: (array) conjunto de urls e ids
@@ -76,7 +92,7 @@ function busca_arquivo_html($file_name, $initial_time_execution){
             //deefine o conteudo como vazio
             $source_code = "";
             //remove o arquivo aguardando
-            die(var_dump(delete_archive_with_path("$PATH_URL_WAITING/$file_name")));
+            delete_archive_with_path("$PATH_URL_WAITING/$file_name");
             //para execucao do while
             break;
         endif;
@@ -93,7 +109,8 @@ function busca_arquivo_html($file_name, $initial_time_execution){
                     //tenta novamente
                     $source_code = file_get_contents("$PATH_URL_FINISHED/" . $file_info->getFilename());
                 }
-
+                //remove o arquivo finalizado
+                delete_archive_with_path("$PATH_URL_FINISHED/$file_name");
                 //sai do foreach
                 break;
             endif;
@@ -103,11 +120,19 @@ function busca_arquivo_html($file_name, $initial_time_execution){
     return $source_code;
 }
 
-//desc: remove arquivo com o caminho especificado
+//desc: remove arquivo com o caminho especificado, se nao encontrar tenta adicionar .processing nele
 //params: (string) caminho do arquivo
 //return: nenhum
 function delete_archive_with_path($path_file){
-    //remove o arquivo
-    return unlink($path_file);
+    //verifica se o arquivo existe
+    if(file_exists($path_file)){
+        //tenta remover o arquivo
+        unlink($path_file);
+    }else{
+        //adiciona extensao ao nome do arquivo
+        $path_file .= ".processing";
+        //tenta remover arquivo com extensao se ele existir
+        if(file_exists($path_file))unlink($path_file);
+    }
 }
 
