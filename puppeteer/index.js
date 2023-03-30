@@ -26,10 +26,12 @@ var status_response = ""; //status da resposta
 
 /*FUNCOES UTILITARIAS*/
 const { delay } = require('./src/utils/f_delay.js');
+const {remove_file} = require("./src/utils/f_remove_file");
+const {write_file} = require("./src/utils/f_write_file");
+const {bool_file_exists} = require("./src/utils/f_bool_file_exists");
 
 /*PROCEDIMENTOS*/
 const { read_waiting_file } = require("./src/procedures/p_read_waiting_file");
-const { finishing_array_requisitions } = require("./src/procedures/p_finishing_array_requisitions");
 
 //fucnao com auto-execucao
 (async () => {
@@ -156,7 +158,7 @@ const { finishing_array_requisitions } = require("./src/procedures/p_finishing_a
             //verifica se e a ultima ocorrencia
             if(queue.length === queue_lenght) {
                 //finalizacao do processo de requisicao em lote
-                finishing_array_requisitions(file_name, queue, PATH_URL_WAITING, PATH_URL_FINISHED);
+                finishing_array_requisitions();
                 //limpa a fila
                 queue = [];
                 //limpa o nome do arquivo
@@ -200,3 +202,36 @@ const { finishing_array_requisitions } = require("./src/procedures/p_finishing_a
         await delay(1000);
     }
 })();
+
+//desc: finaliza o lote de requisicoes
+//params: nenhum
+//return: nenhum
+function finishing_array_requisitions(){
+    //tenta fazer gestao com arquivos
+    try{
+        //verifica se o arquivo ainda existe na area de aguarde (com ou sem extensao)
+        if(bool_file_exists(`${PATH_URL_WAITING}/${file_name}`, {include_search_extension: true})){
+            //faz criacao do arquivo com o conteudo
+            write_file(`${PATH_URL_FINISHED}/${file_name}`, JSON.stringify(queue));
+        }else{
+            //se nao existe mais, limpa variavel do conteudo
+            queue = [];
+        }
+        //remove o arquivo de processamento atual
+        remove_file(`${PATH_URL_WAITING}/${file_name}.processing`);
+    }catch(error){
+        //se nao puder exibe erro
+        console.log(error)
+    }finally{ //independente, faz limpeza da metadata
+        //limpa a fila
+        queue = [];
+        //limpa o nome do arquivo
+        file_name = "";
+        //limpa a mensagem de erro
+        error_msg = "";
+        //limpa o tipo de conteudo
+        content_type = "";
+        //limpa o status de resposta
+        status_response = "";
+    }
+}
