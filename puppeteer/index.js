@@ -25,11 +25,13 @@ var content_type = ""; //tipo de conteudo
 var status_response = ""; //status da resposta
 
 /*FUNCOES UTILITARIAS*/
-const { delay } = require('./utils/f_delay.js');
-const { remove_file } = require("./utils/f_remove_file");
-const { write_file } = require("./utils/f_write_file");
-const {bool_file_exists} = require("./utils/f_bool_file_exists");
-const {read_file} = require("./utils/f_read_file");
+const { delay } = require('./src/utils/f_delay.js');
+const { remove_file } = require("./src/utils/f_remove_file");
+const { write_file } = require("./src/utils/f_write_file");
+const { bool_file_exists } = require("./src/utils/f_bool_file_exists");
+
+/*COMPONENTS*/
+const { read_waiting_file } = require("./src/procedures/p_read_waiting_file");
 
 //fucnao com auto-execucao
 (async () => {
@@ -173,7 +175,7 @@ const {read_file} = require("./utils/f_read_file");
                     //renomeia para processamento
                     await fs.rename(`${PATH_URL_WAITING}/${file}`, `${PATH_URL_WAITING}/${file}.processing`, () => {})
                     //faz a leitura do conteudo do arquivo pegando o array de urls dentro dele
-                    const array_url = await read_waiting_file(file);
+                    const array_url = await read_waiting_file(file, PATH_URL_WAITING);
                     //armazena em variavel global o tamanho da fila
                     queue_lenght = array_url.length;
                     //armazena em variavel global o nome do arquivo
@@ -190,31 +192,6 @@ const {read_file} = require("./utils/f_read_file");
         await delay(1000);
     }
 })();
-
-//desc: leitura de arquivo
-//params: (string) nome do arquivo
-//return:
-async function read_waiting_file(file){
-    //array de urls inicia vazia
-    var array_url = [];
-    //nome do arquivo
-    var file_name = `${PATH_URL_WAITING}/${file}.processing`;
-
-    //verifica se o arquivo nao existe
-    if(!bool_file_exists(file_name)){
-        //tenta sem a extensao
-        file_name = `${PATH_URL_WAITING}/${file}`;
-    }
-    //verifica se o arquivo existe
-    if(bool_file_exists(file_name)){
-        //tenta sem a extensao
-        const file_content = read_file(file_name);
-        //converte arquivo em json
-        array_url = JSON.parse(file_content)
-    }
-    //retorna o array de urls apos conversao
-    return array_url;
-}
 
 //desc: finaliza o lote de requisicoes
 //params: nenhum
