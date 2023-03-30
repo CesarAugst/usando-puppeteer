@@ -1,10 +1,13 @@
+/*CONSTANTES DE VALOR*/
+const time_to_wait_in_page = 25000; //milisseconds que fica em cada pagina antes de encerrar como timeout
+const PATH_URL_WAITING = './url_aguardando'; //caminho ate a pasta de url_aguardando
+const PATH_URL_FINISHED = './url_finalizado'; //caminho ate a pasta de url_finalizado
+/*---*/
+
+
 const { Cluster } = require('puppeteer-cluster');
 const vanillaPuppeteer = require('puppeteer');
 const { addExtra } = require('puppeteer-extra');
-
-/*CONSTANTES DE VALOR*/
-//milisseconds que fica em cada pagina antes de encerrar como timeout
-const time_to_wait_in_page = 25000;
 
 //permitou rastrear sites com cloud flare protection habilitado
 const Stealth = require('puppeteer-extra-plugin-stealth');
@@ -222,13 +225,13 @@ var status_response = "";
     //loop infinito
     while(true){
         //acessa o diretorio
-        fs.readdir("./url_aguardando", (err, files) => {
+        fs.readdir(PATH_URL_WAITING, (err, files) => {
             //percorre o diretorio e faz um loop com o nome dos arquivos
             files.forEach(async(file) => {
                 //verifica se nao possui o sufixo de quando ja esta sendo processado por outra instancia
                 if (!file.endsWith('.processing')) {
                     //renomeia para processamento
-                    await fs.rename(`./url_aguardando/${file}`, `./url_aguardando/${file}.processing`, () => {})
+                    await fs.rename(`${PATH_URL_WAITING}/${file}`, `${PATH_URL_WAITING}/${file}.processing`, () => {})
                     //faz a leitura do conteudo do arquivo pegando o array de urls dentro dele
                     const array_url = await read_waiting_file(file);
                     //armazena em variavel global o tamanho da fila
@@ -255,12 +258,12 @@ async function read_waiting_file(file){
     //array de urls inicia vazia
     var array_url = [];
     //nome do arquivo
-    var file_name = `./url_aguardando/${file}.processing`;
+    var file_name = `${PATH_URL_WAITING}/${file}.processing`;
 
     //verifica se o arquivo nao existe
     if(!fs.existsSync(file_name)){
         //tenta sem a extensao
-        file_name = `./url_aguardando/${file}`;
+        file_name = `${PATH_URL_WAITING}/${file}`;
     }
     //verifica se o arquivo existe
     if(fs.existsSync(file_name)){
@@ -280,9 +283,9 @@ function finishing_array_requisitions(){
     //tenta fazer gestao com arquivos
     try{
         //faz criacao do arquivo com o conteudo
-        fs.writeFileSync(`./url_finalizado/${file_name}`, JSON.stringify(queue), {encoding: 'utf-8'});
+        fs.writeFileSync(`${PATH_URL_FINISHED}/${file_name}`, JSON.stringify(queue), {encoding: 'utf-8'});
         //remove o arquivo de processamento atual
-        fs.unlink(`./url_aguardando/${file_name}.processing`, ()=>{});
+        fs.unlink(`${PATH_URL_WAITING}/${file_name}.processing`, ()=>{});
     }catch(error){
         //se nao puder exibe erro
         console.log(error)

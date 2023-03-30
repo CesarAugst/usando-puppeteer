@@ -1,7 +1,9 @@
 <?php
 /*CONSTANTES DE VALOR*/
-//segundos que a requisicao espera a geracao de arquivo antes de encerrar com o campo null
-$time_to_wait_archive = 25;
+$TIME_TO_WAIT_IN_ARCHIVE = 25; //segundos que a requisicao espera a geracao de arquivo antes de encerrar com o campo null
+$PATH_URL_WAITING = "../puppeteer/url_aguardando"; //caminho ate a pasta de url_aguardando
+$PATH_URL_FINISHED = "../puppeteer/url_finalizado"; //caminho ate a pasta de url_finalizado
+/*---*/
 
 //marca inicio da execucao
 $initial_time_execution = time();
@@ -36,20 +38,29 @@ header("HTTP/1.1 $status");
 //exibe resposta
 echo json_encode($response);
 
+//desc:
+//params:
+//return:
 function gera_arquivo_txt($url){
-//    $file_name = md5($url);
+    //conteudo global
+    global $PATH_URL_WAITING; //cmainho para url_aguardando
+    //nome do arquivo em hash
     $file_name = md5(time());
     //novo arquivo usanod o hash e o array de urls no conteudo
-    file_put_contents("../url_aguardando/$file_name", json_encode($url)); //armazena resultado em html
+    file_put_contents("$PATH_URL_WAITING/$file_name", json_encode($url)); //armazena resultado em html
     //retorna nome do arquivo
     return $file_name;
 }
 
+//desc:
+//params:
+//return:
 function busca_arquivo_html($file_name, $initial_time_execution){
-    //conteudo global para aguardar a requisicao
-    global $time_to_wait_archive;
+    //conteudo global
+    global $TIME_TO_WAIT_IN_ARCHIVE; //tempo para aguardar a requisicao
+    global $PATH_URL_FINISHED; //cmainho para url_finalizado
     //pega os arquivos do diretorio
-    $array_dir_files = new DirectoryIterator("../url_finalizado");
+    $array_dir_files = new DirectoryIterator($PATH_URL_FINISHED);
     //inicia como nulo a variavel do codigo fonte
     $source_code = null;
     //repete infinitamente
@@ -57,7 +68,7 @@ function busca_arquivo_html($file_name, $initial_time_execution){
         //calcula o tmepo gasto
         $time_processing = time() - $initial_time_execution;
         //se o tempo ultrapassar 25seg
-        if($time_processing > $time_to_wait_archive):
+        if($time_processing > $TIME_TO_WAIT_IN_ARCHIVE):
             $source_code = "";
             //para execucao do while
             break;
@@ -67,13 +78,13 @@ function busca_arquivo_html($file_name, $initial_time_execution){
             if($file_info->getFilename() == $file_name):
                 sleep(1);
                 //pega o conteudo do arquivo
-                $source_code = file_get_contents("../url_finalizado/" . $file_info->getFilename());
+                $source_code = file_get_contents("$PATH_URL_FINISHED/" . $file_info->getFilename());
                 //verifica se o conteudo recebido e nulo
                 if(!$source_code){
                     //espera mais 1 segundo e meio
                     sleep(2);
                     //tenta novamente
-                    $source_code = file_get_contents("../url_finalizado/" . $file_info->getFilename());
+                    $source_code = file_get_contents("$PATH_URL_FINISHED/" . $file_info->getFilename());
                 }
 
                 //sai do foreach
