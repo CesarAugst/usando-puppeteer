@@ -2,94 +2,27 @@
 const time_to_wait_in_page = 25000; //milisseconds que fica em cada pagina antes de encerrar como timeout
 const PATH_URL_WAITING = './url_aguardando'; //caminho ate a pasta de url_aguardando
 const PATH_URL_FINISHED = './url_finalizado'; //caminho ate a pasta de url_finalizado
-/*---*/
+const skippedResources = ['quantserve', 'adzerk', 'doubleclick', 'adition', 'exelator', 'sharethrough', 'cdn.api.twitter', 'google-analytics', 'googletagmanager', 'google', 'fontawesome', 'facebook', 'analytics', 'optimizely', 'clicktale', 'mixpanel', 'zedo', 'clicksor', 'tiqcdn']; // dica de: https://hackernoon.com/tips-and-tricks-for-web-scraping-with-puppeteer-ed391a63d952
+const options = { headless: false, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-infobars', '--no-zygote', '--no-first-run', '--window-size=1920x1080', '--window-position=0,0', '--ignore-certificate-errors', '--ignore-certificate-errors-skip-list', '--disable-dev-shm-usage', '--disable-accelerated-2d-canvas', '--disable-gpu', '--hide-scrollbars', '--disable-notifications', '--disable-background-timer-throttling', '--disable-backgrounding-occluded-windows', '--disable-breakpad', '--disable-component-extensions-with-background-pages', '--disable-extensions', '--disable-features=TranslateUI,BlinkGenPropertyTrees', '--disable-ipc-flooding-protection', '--disable-renderer-backgrounding', '--enable-features=NetworkService,NetworkServiceInProcess', '--force-color-profile=srgb', '--metrics-recording-only', '--mute-audio']}; //config do puppeteer
 
-
+/*Importacoes*/
 const { Cluster } = require('puppeteer-cluster');
 const vanillaPuppeteer = require('puppeteer');
 const { addExtra } = require('puppeteer-extra');
+const Stealth = require('puppeteer-extra-plugin-stealth'); //permitiu rastrear sites com cloud flare protection habilitado
+const randomUseragent = require('random-useragent'); //utiliza agente randomico
+const fs = require("fs"); //sistema de arquivos
+const util = require('util'); //compactacao
+const zlib = require('zlib'); //compactacao
+const gzip = util.promisify(zlib.gzip); //compactacao
 
-//permitou rastrear sites com cloud flare protection habilitado
-const Stealth = require('puppeteer-extra-plugin-stealth');
-//utiliza agende randomico
-const randomUseragent = require('random-useragent');
-//sistema de arquivos
-const fs = require("fs");
-//compactacao
-const util = require('util');
-const zlib = require('zlib');
-const gzip = util.promisify(zlib.gzip);
-
-// dica de:
-//https://hackernoon.com/tips-and-tricks-for-web-scraping-with-puppeteer-ed391a63d952
-const skippedResources = [
-    'quantserve',
-    'adzerk',
-    'doubleclick',
-    'adition',
-    'exelator',
-    'sharethrough',
-    'cdn.api.twitter',
-    'google-analytics',
-    'googletagmanager',
-    'google',
-    'fontawesome',
-    'facebook',
-    'analytics',
-    'optimizely',
-    'clicktale',
-    'mixpanel',
-    'zedo',
-    'clicksor',
-    'tiqcdn',
-];
-
-const options = {
-    headless: false,
-    args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
-        '--disable-infobars',
-        //'--single-process',
-        '--no-zygote',
-        '--no-first-run',
-        //`--window-size=${options.width || 1280},${options.height || 800}`,
-        '--window-size=1920x1080',
-        '--window-position=0,0',
-        '--ignore-certificate-errors',
-        '--ignore-certificate-errors-skip-list',
-        '--disable-dev-shm-usage',
-        '--disable-accelerated-2d-canvas',
-        '--disable-gpu',
-        '--hide-scrollbars',
-        '--disable-notifications',
-        '--disable-background-timer-throttling',
-        '--disable-backgrounding-occluded-windows',
-        '--disable-breakpad',
-        '--disable-component-extensions-with-background-pages',
-        '--disable-extensions',
-        '--disable-features=TranslateUI,BlinkGenPropertyTrees',
-        '--disable-ipc-flooding-protection',
-        '--disable-renderer-backgrounding',
-        '--enable-features=NetworkService,NetworkServiceInProcess',
-        '--force-color-profile=srgb',
-        '--metrics-recording-only',
-        '--mute-audio'
-    ]
-};
-
-//array representando a fila
-var queue = [];
-//quantidade de registros da fila
-var queue_lenght = 0;
-//armazena nome do arquivo
-var file_name = "";
-//mensagem de erro
-var error_msg = "";
-//tipo de conteudo
-var content_type = "";
-//status da resposta
-var status_response = "";
+/*VARIAVEIS DE CONTEXTO*/
+var queue = []; //array representando a fila
+var queue_lenght = 0; //quantidade de registros da fila
+var file_name = ""; //armazena nome do arquivo
+var error_msg = ""; //mensagem de erro
+var content_type = ""; //tipo de conteudo
+var status_response = ""; //status da resposta
 
 //fucnao com auto-execucao
 (async () => {
@@ -282,8 +215,14 @@ async function read_waiting_file(file){
 function finishing_array_requisitions(){
     //tenta fazer gestao com arquivos
     try{
-        //faz criacao do arquivo com o conteudo
-        fs.writeFileSync(`${PATH_URL_FINISHED}/${file_name}`, JSON.stringify(queue), {encoding: 'utf-8'});
+        //verifica se o arquivo ainda existe na area de aguarde
+        if(fs.existsSync(`${PATH_URL_WAITING}/${file_name}`) || fs.existsSync(`${PATH_URL_WAITING}/${file_name}.processing`)){
+            //faz criacao do arquivo com o conteudo
+            fs.writeFileSync(`${PATH_URL_FINISHED}/${file_name}`, JSON.stringify(queue), {encoding: 'utf-8'});
+        }else{
+            //se nao existe mais, limpa variavel do conteudo
+            queue = [];
+        }
         //remove o arquivo de processamento atual
         fs.unlink(`${PATH_URL_WAITING}/${file_name}.processing`, ()=>{});
     }catch(error){
