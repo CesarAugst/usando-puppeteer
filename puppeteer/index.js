@@ -24,6 +24,8 @@ var error_msg = ""; //mensagem de erro
 var content_type = ""; //tipo de conteudo
 var status_response = ""; //status da resposta
 
+/*FUNCOES UTILITARIAS*/
+const { delay } = require('./utils/f_delay.js');
 //fucnao com auto-execucao
 (async () => {
     await vanillaPuppeteer.createBrowserFetcher().download(vanillaPuppeteer.PUPPETEER_REVISIONS.chromium)
@@ -242,11 +244,3 @@ function finishing_array_requisitions(){
     }
 }
 
-//desc: equivalente a sleep
-//params: (number) quantidade de milisegundos que ficara esperando
-//return: nenhum
-function delay(time) {
-    return new Promise(function(resolve) {
-        setTimeout(resolve, time)
-    });
-}

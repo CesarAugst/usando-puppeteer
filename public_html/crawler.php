@@ -5,6 +5,7 @@ $PATH_URL_WAITING = "../puppeteer/url_aguardando"; //caminho ate a pasta de url_
 $PATH_URL_FINISHED = "../puppeteer/url_finalizado"; //caminho ate a pasta de url_finalizado
 /*---*/
 
+
 //marca inicio da execucao
 $initial_time_execution = time();
 //recebendo array de urls via body_params
