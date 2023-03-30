@@ -26,13 +26,10 @@ var status_response = ""; //status da resposta
 
 /*FUNCOES UTILITARIAS*/
 const { delay } = require('./src/utils/f_delay.js');
-const { remove_file } = require("./src/utils/f_remove_file");
-const { write_file } = require("./src/utils/f_write_file");
-const { bool_file_exists } = require("./src/utils/f_bool_file_exists");
 
-/*COMPONENTS*/
+/*PROCEDIMENTOS*/
 const { read_waiting_file } = require("./src/procedures/p_read_waiting_file");
-const {finishing_array_requisitions} = require("./src/procedures/p_finishing_array_requisitions");
+const { finishing_array_requisitions } = require("./src/procedures/p_finishing_array_requisitions");
 
 //fucnao com auto-execucao
 (async () => {
