@@ -1,8 +1,8 @@
 <?php
 /*CONSTANTES DE VALOR*/
 $TIME_TO_WAIT_IN_ARCHIVE = 25; //segundos que a requisicao espera a geracao de arquivo antes de encerrar com o campo null
-$PATH_URL_WAITING = "../puppeteer/url_aguardando"; //caminho ate a pasta de url_aguardando
-$PATH_URL_FINISHED = "../puppeteer/url_finalizado"; //caminho ate a pasta de url_finalizado
+$PATH_URL_WAITING = "/var/www/crawler-login.pressmanager.com.br/puppeteer/url_aguardando"; //caminho ate a pasta de url_aguardando
+$PATH_URL_FINISHED = "/var/www/crawler-login.pressmanager.com.br/puppeteer/url_finalizado"; //caminho ate a pasta de url_finalizado
 /*---*/
 
 
