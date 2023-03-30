@@ -38,16 +38,18 @@ header("HTTP/1.1 $status");
 //exibe resposta
 echo json_encode($response);
 
-//desc:
-//params:
-//return:
-function gera_arquivo_txt($url){
+//desc: gera um arquivo na apsta de espera com as urls da requisicao
+//params: (array) conjunto de urls e ids
+//return: (string) nome do arquivo gerado
+function gera_arquivo_txt($url_array){
     //conteudo global
     global $PATH_URL_WAITING; //cmainho para url_aguardando
     //nome do arquivo em hash
     $file_name = md5(time());
+    //caminho do arquivo
+    $file_path = "$PATH_URL_WAITING/$file_name";
     //novo arquivo usanod o hash e o array de urls no conteudo
-    file_put_contents("$PATH_URL_WAITING/$file_name", json_encode($url)); //armazena resultado em html
+    file_put_contents($file_path, json_encode($url_array)); //armazena resultado em html
     //retorna nome do arquivo
     return $file_name;
 }
@@ -56,20 +58,25 @@ function gera_arquivo_txt($url){
 //params:
 //return:
 function busca_arquivo_html($file_name, $initial_time_execution){
-    //conteudo global
+    //iniciando valores
     global $TIME_TO_WAIT_IN_ARCHIVE; //tempo para aguardar a requisicao
     global $PATH_URL_FINISHED; //cmainho para url_finalizado
+    global $PATH_URL_WAITING; //caminho para url_aguardando
+    $source_code = null; //inicia como nulo a variavel do codigo fonte
+
     //pega os arquivos do diretorio
     $array_dir_files = new DirectoryIterator($PATH_URL_FINISHED);
-    //inicia como nulo a variavel do codigo fonte
-    $source_code = null;
+
     //repete infinitamente
     while($source_code == null){
         //calcula o tmepo gasto
         $time_processing = time() - $initial_time_execution;
         //se o tempo ultrapassar 25seg
         if($time_processing > $TIME_TO_WAIT_IN_ARCHIVE):
+            //deefine o conteudo como vazio
             $source_code = "";
+            //remove o arquivo aguardando
+            die(var_dump(delete_archive_with_path("$PATH_URL_WAITING/$file_name")));
             //para execucao do while
             break;
         endif;
@@ -95,3 +102,12 @@ function busca_arquivo_html($file_name, $initial_time_execution){
     //retorna o conteudo do arquivo
     return $source_code;
 }
+
+//desc: remove arquivo com o caminho especificado
+//params: (string) caminho do arquivo
+//return: nenhum
+function delete_archive_with_path($path_file){
+    //remove o arquivo
+    return unlink($path_file);
+}
+
