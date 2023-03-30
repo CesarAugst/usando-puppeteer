@@ -28,6 +28,7 @@ var status_response = ""; //status da resposta
 const { delay } = require('./utils/f_delay.js');
 const { remove_file } = require("./utils/f_remove_file");
 const { write_file } = require("./utils/f_write_file");
+const {bool_file_exists} = require("./utils/f_bool_file_exists");
 
 //fucnao com auto-execucao
 (async () => {
@@ -199,12 +200,12 @@ async function read_waiting_file(file){
     var file_name = `${PATH_URL_WAITING}/${file}.processing`;
 
     //verifica se o arquivo nao existe
-    if(!fs.existsSync(file_name)){
+    if(!bool_file_exists(file_name)){
         //tenta sem a extensao
         file_name = `${PATH_URL_WAITING}/${file}`;
     }
     //verifica se o arquivo existe
-    if(fs.existsSync(file_name)){
+    if(bool_file_exists(file_name)){
         //tenta sem a extensao
         const file_content = fs.readFileSync(file_name,'utf8');
         //converte arquivo em json
@@ -215,13 +216,13 @@ async function read_waiting_file(file){
 }
 
 //desc: finaliza o lote de requisicoes
-//params:
-//return:
+//params: nenhum
+//return: nenhum
 function finishing_array_requisitions(){
     //tenta fazer gestao com arquivos
     try{
-        //verifica se o arquivo ainda existe na area de aguarde
-        if(fs.existsSync(`${PATH_URL_WAITING}/${file_name}`) || fs.existsSync(`${PATH_URL_WAITING}/${file_name}.processing`)){
+        //verifica se o arquivo ainda existe na area de aguarde (com ou sem extensao)
+        if(bool_file_exists(`${PATH_URL_WAITING}/${file_name}`, {include_search_extension: true})){
             //faz criacao do arquivo com o conteudo
             write_file(`${PATH_URL_FINISHED}/${file_name}`, JSON.stringify(queue));
         }else{
